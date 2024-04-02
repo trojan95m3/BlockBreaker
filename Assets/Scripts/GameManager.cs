@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager pInstance;
 
+    public UI _UI;
+
     [Header("Turret Settings")]
     [Tooltip("The transform that will be rotated")]
     public Transform _Turret;
@@ -29,22 +31,31 @@ public class GameManager : MonoBehaviour
     public int _BlankPercentage;
     [Tooltip("the percentage of screen space to use for the layout")]
     public int _Percentage;
+    [Tooltip("the percentage chance a block is not created")]
+    public int _BlankChance;
     [Tooltip("the color will show the number of hits needed")]
     public List<Color> _HitColors;
 
-    private float lastFireTime = 0;
+    private bool mGameOver = false;
+    private float mLastFireTime = 0;
+    private int mNumBlocks = 0;
+    private List<Projectile> mProjectiles = new List<Projectile>();
+    private List<Block> mBlocks =  new List<Block>();
 
-    private List<Projectile> projectiles = new List<Projectile>();
-    private List<Block> blocks =  new List<Block>();
-
-    void Start()
+    /// <summary>
+    /// Set the static instance and create the layout
+    /// </summary>
+    private void Start()
     {
         pInstance = this;
 
         CreateLayout();
     }
 
-    void CreateLayout()
+    /// <summary>
+    /// Based on the size of the screen and the parameters create the layout.
+    /// </summary>
+    private void CreateLayout()
     {
         float aspect = (float)Screen.width / Screen.height;
         float height = Camera.main.orthographicSize * 2;
@@ -62,21 +73,33 @@ public class GameManager : MonoBehaviour
         float blockWidth = _Block.transform.localScale.x;
         int count = (int)(width * blockWidth);
 
+        mNumBlocks = 0;
         for(int i =  0; i < rows; i++) 
         { 
             for(int j = 0; j < count; j++) 
             {
+                int chance = Random.Range(0, 100);
+                if (chance < _BlankChance)
+                    continue;
+
                 Block block = GetBlock();
                 block.transform.position = new Vector2(j * blockWidth - ((int)width * 0.5f) + blockWidth * 0.5f, startY - i * blockHeight + blockHeight * 0.5f);
                 int hits = Random.Range(0, _HitColors.Count) + 1;
                 block.Init(hits, _HitColors[hits - 1]);
+                mNumBlocks++;
             }
         }
     }
 
-    void Update()
+    /// <summary>
+    /// Handle the turret moving and shooting.
+    /// </summary>
+    private void Update()
     {
-        // move the turret
+        if (mGameOver)
+            return;
+
+                // move the turret
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         Vector3 offset = mousePosition - _Turret.position;
@@ -89,24 +112,54 @@ public class GameManager : MonoBehaviour
         {
             float rateOfFire = 1 / _RateOfFire;
 
-            if ((Time.realtimeSinceStartup - lastFireTime) > rateOfFire)
+            if ((Time.realtimeSinceStartup - mLastFireTime) > rateOfFire)
             {
-                lastFireTime = Time.realtimeSinceStartup;
+                mLastFireTime = Time.realtimeSinceStartup;
 
                 Projectile projectile = GetProjectile();
                 Vector2 direction = _Turret.transform.up;
                 projectile.Init(direction * _ProjectileSpeed, _ProjectileLifeSpan);
+
+                _UI.ProjectileShot();
             }
         }
     }
 
-    Projectile GetProjectile()
+    /// <summary>
+    ///  Set the mGameOver flag, remove any remaining projectiles and call
+    ///  UI.GameOver()
+    /// </summary>
+    private void GameOver()
+    {
+        mGameOver = true;
+
+        Projectile [] projectiles = FindObjectsOfType<Projectile>();
+        foreach(Projectile projectile in projectiles) 
+            RemoveProjectile(projectile);
+
+        _UI.GameOver();
+    }
+
+    /// <summary>
+    /// Called from UI to restart the game
+    /// </summary>
+    public void Restart()
+    {
+        mGameOver = false;
+        CreateLayout();
+    }
+
+    /// <summary>
+    /// Get a projectile from the pool
+    /// </summary>
+    /// <returns>Projectile</returns>
+    private Projectile GetProjectile()
     {
         Projectile projectile;
-        if (projectiles.Count > 0)
+        if (mProjectiles.Count > 0)
         {
-            projectile = projectiles[0];
-            projectiles.RemoveAt(0);
+            projectile = mProjectiles[0];
+            mProjectiles.RemoveAt(0);
             projectile.gameObject.SetActive(true);
             projectile.transform.position = _Turret.position + _Turret.up;
         }
@@ -116,19 +169,27 @@ public class GameManager : MonoBehaviour
         return projectile;
     }
 
+    /// <summary>
+    /// Add a projectile to the pool
+    /// </summary>
+    /// <param name="projectile"></param>
     public void RemoveProjectile(Projectile projectile)
     {
         projectile.gameObject.SetActive(false);
-        projectiles.Add(projectile);
+        mProjectiles.Add(projectile);
     }
 
-    Block GetBlock()
+    /// <summary>
+    /// Gets a block from the pool
+    /// </summary>
+    /// <returns>Block</returns>
+    private Block GetBlock()
     {
         Block block;
-        if (blocks.Count > 0)
+        if (mBlocks.Count > 0)
         {
-            block = blocks[0];
-            blocks.RemoveAt(0);
+            block = mBlocks[0];
+            mBlocks.RemoveAt(0);
             block.gameObject.SetActive(true);
         }
         else
@@ -137,9 +198,28 @@ public class GameManager : MonoBehaviour
         return block;
     }
 
+    /// <summary>
+    /// Adds a block to the pool and decreases mNumBlocks.
+    /// If mNumBlocks reaches 0 then GameOver.
+    /// </summary>
+    /// <param name="block"></param>
     public void RemoveBlock(Block block)
     {
         block.gameObject.SetActive(false);
-        blocks.Add(block);
+        mBlocks.Add(block);
+
+        _UI.BlockDestroyed();
+
+        mNumBlocks--;
+        if (mNumBlocks == 0)
+            GameOver();
+    }
+
+    /// <summary>
+    /// Function to tell the UI a block was hit.
+    /// </summary>
+    public void BlockHit()
+    {
+        _UI.BlockHit();
     }
 }

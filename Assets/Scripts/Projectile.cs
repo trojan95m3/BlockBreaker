@@ -1,6 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// Projectile class sets the velocity of the projectile and its lifespan.
+/// Tells the GameManager to remove it if colliding with the trigger (bottom).
+/// </summary>
 public class Projectile : MonoBehaviour
 {
     public Rigidbody2D _Rigidbody2D;

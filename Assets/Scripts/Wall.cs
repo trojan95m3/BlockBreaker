@@ -1,10 +1,15 @@
 using UnityEngine;
 
+/// <summary>
+/// This class will move the object to the specified side of the screen and
+/// scale the object to fill the screen.
+/// </summary>
 public class Wall : MonoBehaviour
 {
     public enum Side
     {  Left, Right, Top, Bottom }
 
+    [Tooltip("What side is this wall on")]
     public Side _Side;
 
     void Start()
