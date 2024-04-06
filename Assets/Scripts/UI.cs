@@ -21,17 +21,30 @@ public class UI : MonoBehaviour
     public string _BlockHit = "A projectile has hit a block";
     public string _BlockDestroyed = "A block was destroyed";
 
-    private List<string> mLogMessages = new List<string>();
+    private Queue<string> mLogMessages = new Queue<string>();
 
     private void Start()
     {
         _TxtGameOver.gameObject.SetActive(false);
         _BtnRestart.gameObject.SetActive(false);
 
-        _BtnRestart.onClick.AddListener(Restart);
+        _BtnRestart.onClick.AddListener(GameStart);
+
+        GameManager.pInstance.OnGameOver += GameOver;
+        GameManager.pInstance.OnProjectileShot += ProjectileShot;
+        GameManager.pInstance.OnBlockHit += BlockHit;
+        GameManager.pInstance.OnBlockDestroyed += BlockDestroyed;
     }
 
-    private void Restart()
+    private void OnDestroy()
+    {
+        GameManager.pInstance.OnGameOver -= GameOver;
+        GameManager.pInstance.OnProjectileShot -= ProjectileShot;
+        GameManager.pInstance.OnBlockHit -= BlockHit;
+        GameManager.pInstance.OnBlockDestroyed -= BlockDestroyed;
+    }
+
+    private void GameStart()
     {
         _TxtGameOver.gameObject.SetActive(false);
         _BtnRestart.gameObject.SetActive(false);
@@ -55,10 +68,10 @@ public class UI : MonoBehaviour
     /// <param name="message"></param>
     private void UpdateConsole(string message)
     {
-        mLogMessages.Add(message);
+        mLogMessages.Enqueue(message);
 
         if (mLogMessages.Count > _NumConsoleLines)
-            mLogMessages.RemoveAt(0);
+            mLogMessages.Dequeue();
 
         StringBuilder sb = new StringBuilder();
         foreach(string s in mLogMessages)

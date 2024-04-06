@@ -9,10 +9,12 @@ public class Block : MonoBehaviour
 {
     public SpriteRenderer _Sprite;
 
+    private LayoutManager mLayoutManager;
     private int mHitsLeft;
 
-    public void Init(int numHits, Color color)
+    public void Init(LayoutManager layoutManager, int numHits, Color color)
     {
+        mLayoutManager = layoutManager;
         mHitsLeft = numHits;
         _Sprite.color = color;
     }
@@ -23,6 +25,6 @@ public class Block : MonoBehaviour
 
         mHitsLeft--;
         if (mHitsLeft <= 0)
-            GameManager.pInstance.RemoveBlock(this);
+            mLayoutManager.RemoveBlock(this);
     }
 }

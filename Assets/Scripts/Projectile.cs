@@ -9,8 +9,11 @@ public class Projectile : MonoBehaviour
 {
     public Rigidbody2D _Rigidbody2D;
 
-    public void Init(Vector2 velocity, float lifespan)
+    private Turret mTurret;
+
+    public void Init(Turret turret, Vector2 velocity, float lifespan)
     {
+        mTurret = turret;
         _Rigidbody2D.velocity = velocity;
         StartCoroutine(Lifespan(lifespan));
     }
@@ -19,12 +22,12 @@ public class Projectile : MonoBehaviour
     { 
         yield return new WaitForSeconds(lifespan);
 
-        GameManager.pInstance.RemoveProjectile(this);
+        mTurret.RemoveProjectile(this);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         StopAllCoroutines();
-        GameManager.pInstance.RemoveProjectile(this);
+        mTurret.RemoveProjectile(this);
     }
 }

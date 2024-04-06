@@ -399,23 +399,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04a8ae55939a679429247fc593c3597f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _UI: {fileID: 1519392323}
-  _Turret: {fileID: 1381420075}
-  _MaxAngle: 75
-  _Projectile: {fileID: 5097117857248153678, guid: 9cc1aec51ba86904d8dfe5e1f8bdfb89, type: 3}
-  _RateOfFire: 5
-  _ProjectileSpeed: 10
-  _ProjectileLifeSpan: 5
-  _Parent: {fileID: 1038100528}
-  _Block: {fileID: 6683573269439068236, guid: efa56a30a3815ef4398df3708406caa8, type: 3}
-  _BlankPercentage: 25
-  _Percentage: 25
-  _BlankChance: 10
-  _HitColors:
-  - {r: 1, g: 0, b: 0, a: 1}
-  - {r: 0, g: 1, b: 0, a: 1}
-  - {r: 0, g: 0, b: 1, a: 1}
-  - {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
 --- !u!4 &754299934
 Transform:
   m_ObjectHideFlags: 0
@@ -584,6 +567,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1038100528}
+  - component: {fileID: 1038100529}
   m_Layer: 0
   m_Name: Layout
   m_TagString: Untagged
@@ -606,6 +590,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1038100529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1038100527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad14710c47f3df44bb8d0de4ade1f80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Block: {fileID: 6683573269439068236, guid: efa56a30a3815ef4398df3708406caa8, type: 3}
+  _BlankPercentage: 25
+  _Percentage: 25
+  _BlankChance: 10
+  _HitColors:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}
+  - {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
 --- !u!1 &1045968245
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,6 +621,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1045968246}
   - component: {fileID: 1045968247}
+  - component: {fileID: 1045968248}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -691,6 +697,24 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1045968248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1045968245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d05358c8777cf894c8b1b102c2fc3915, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Turret: {fileID: 1381420075}
+  _MaxAngle: 75
+  _Projectile: {fileID: 5097117857248153678, guid: 9cc1aec51ba86904d8dfe5e1f8bdfb89, type: 3}
+  _RateOfFire: 5
+  _ProjectileSpeed: 10
+  _ProjectileLifeSpan: 5
 --- !u!1 &1306484488
 GameObject:
   m_ObjectHideFlags: 0
