@@ -10,32 +10,35 @@ Spacebar to shoot projectiles
 
 Game over when all blocks destroyed.
 
-For simplicity I chose to create a singleton GameManager class to control creating the layout, the turret,
-and game over logic.  
+GameManager singleton defines the actions that objects can register to.  An object can call one of the public 
+functions to invoke the action and notify whoever is registered.  Other options would be to have a single Event function
+and pass a string or enum with the event type.  You could also use interfaces and injection to link the objects
+together and still keep implementation separate.
+
 
 GameManager.cs
-	CreateLayout() - based on the parameters determine how many block will fit and then create them. Pull a block from the 
-	pool if available, otherwise create a new one. 
+	Start() - Invokes OnGameStart()
 	
-	Update() - moves turret and checks for shooting
-	
-	On firing a projectile is loaded from the pool if available otherwise a new one is created.
+Turret.cs
+	Controls the movement of the turret and the firing.  Pools the projectiles.
 	
 Projectile.cs
-	Sets the velocity, controls the lifespan and handles going off the bottom of the screen.
+	Sets the velocity, controls the lifespan and handles going off the bottom of the screen.  Calls
+	Turret.RemoveProjectile to destroy the projectile.	
 	
 Wall.cs
 	Positions the wall colliders based on the size of the screen.
 	
+LayoutManager.cs
+	Registers to OnGameStart to create the layout.  Pools the blocks.  Calls BlockDestroyed() when a block
+	is destroyed and GameOver() when all blocks destroyed
+	
 Block.cs
-	Sets the color and number of hits.  Handles collision with the projectile
+	Sets the color and number of hits.  Handles collision with the projectile.  Calls LayoutManager to
+	remove the blocks
 	
 UI.cs
-	Displays the GameOver text, restart button, and the console
-	
-	
-Challenges
-	Remembering how to convert screen size into 2D orthographic space
+	Displays the GameOver text, restart button, and the console.  Registers to events to display the messages.
 	
 Potential Improvements
 	Sounds!
